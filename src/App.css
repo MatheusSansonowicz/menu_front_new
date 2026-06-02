@@ -2,7 +2,14 @@
     padding: 24px;
     background-color: #f5f5f5;
   }
-  
+.produtos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px 0;
+  justify-content: center;
+}
+
   .container h1 {
     text-align: center;
     margin-bottom: 24px;

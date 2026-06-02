@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type {ProdutoDados} from "../interfaces/produtoDados";
 
 const API_URL  = "http://localhost:8080";
@@ -28,23 +28,38 @@ export function useProdutoDadosMutate(){
     })
 }
 
-export async function deletarProduto(id:number) {
-    
-    const response = await axios.delete(
-        `${API_URL}/produtos/${id}`
+export async function editarProduto(produto: ProdutoDados) {
+    const response = await axios.put(
+        `${API_URL}/produtos/${produto.id}`,
+        produto
     );
     return response.data;
+}
+export function useProdutoDadosUpdate() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: editarProduto,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["produto-dados"]
+            });
+        }
+    });
+}
+
+async function deletarProduto(id: number): Promise<void> {
+
+    await axios.put(`${API_URL}/produtos/delete/${id}`);
 }
 
 export function useProdutoDadosDelete() {
     const queryClient = useQueryClient();
-  
+
     return useMutation({
-      // Aqui passamos o ID para a função de deleção
-      mutationFn: (id: number) => deletarProduto(id), 
-      onSuccess: () => {
-        // Atualiza a lista automaticamente após deletar
-        queryClient.invalidateQueries({ queryKey: ["produto-dados"] });
-      }
+        mutationFn: deletarProduto,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["produto-dados"] });
+        }
     });
-  }
+}
